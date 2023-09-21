@@ -3,6 +3,7 @@ import cors from 'cors';
 import { MONGODB_URL, PORT } from './config/env-variables.js'
 import authRouter from "./routes/authRoute.js";
 import mongoose from "mongoose";
+import passwordRouter from "./routes/passwordRoute.js";
 class Server {
     constructor() {
         this.app = express();
@@ -29,7 +30,7 @@ class Server {
     }
     routes() {
         this.app.use(this.path.auth, authRouter)
-        this.app.use(this.path.password, authRouter)
+        this.app.use(this.path.password, passwordRouter)
         this.app.use('/', (req, res) => {
             res.send('welcome to pass word generator');
         })
