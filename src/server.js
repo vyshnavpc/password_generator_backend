@@ -4,6 +4,8 @@ import { MONGODB_URL, PORT } from './config/env-variables.js'
 import authRouter from "./routes/authRoute.js";
 import mongoose from "mongoose";
 import passwordRouter from "./routes/passwordRoute.js";
+import cookieParser from 'cookie-parser'
+import { validateToken } from "./middlewares/validateToken.js";
 class Server {
     constructor() {
         this.app = express();
@@ -18,7 +20,11 @@ class Server {
     }
     middlewares() {
         this.app.use(express.json())
-        this.app.use(cors());
+        this.app.use(cors({
+            origin: 'http://localhost:5173',
+            credentials: true
+        }));
+        this.app.use(cookieParser())
     }
     database() {
         mongoose.connect(MONGODB_URL)
@@ -30,7 +36,7 @@ class Server {
     }
     routes() {
         this.app.use(this.path.auth, authRouter)
-        this.app.use(this.path.password, passwordRouter)
+        this.app.use(this.path.password, validateToken, passwordRouter)
         this.app.use('/', (req, res) => {
             res.send('welcome to pass word generator');
         })

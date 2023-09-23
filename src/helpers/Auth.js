@@ -40,7 +40,7 @@ class Auth {
     //     return status
     // }
     async signup() {
-        const alreadyExist = await User.find({ email: this.credentials.email }).count()
+        const alreadyExist = await User.find({ phone: this.credentials.phone }).count()
         if (alreadyExist) {
             throw new Error('User already exist');
         }
@@ -54,7 +54,7 @@ class Auth {
         })
         await newUser.save();
         const token = await this.generateToken({ user_id: newUser._id })
-        return { ...newUser._doc, token };
+        return { ...newUser, token };
     }
 
     async login() {
@@ -66,7 +66,7 @@ class Auth {
         if (OtpStatus && OtpStatus.status !== "approved") {
             throw new Error('Invalid otp')
         }
-        const token = await this.generateToken({ user_id: user._id })
+        const token = await this.generateToken({ id: user._id })
         return { ...user._doc, token }
     }
 }

@@ -2,11 +2,11 @@ import passwordGenerator from '../helpers/Password.js'
 export const addPassword = async (req, res) => {
     try {
         const PasswordGenerator = new passwordGenerator()
-        const { password, userId } = req.body
-        if (!password || !userId) {
-            res.status(404).json({ status: false, message: '' })
+        const { password } = req.body
+        if (!password) {
+            throw new Error("Params missing")
         }
-        const result = await PasswordGenerator.addPassword(req.body)
+        const result = await PasswordGenerator.addPassword(req.body.password, req.user.id)
         res.json(result)
     } catch (err) {
         res.status(500).json(err.message)
@@ -14,9 +14,13 @@ export const addPassword = async (req, res) => {
 }
 export const getAllPassword = async (req, res) => {
     try {
-        req.user = { id: "650ab4e233542b8321d725e5" }
+        const { otp } = req.query
+        if (!otp) {
+            throw new Error("Params missing")
+        }
         const PasswordGenerator = new passwordGenerator()
-        const passwords = await PasswordGenerator.allPassword(req.user.id)
+  
+        const passwords = await PasswordGenerator.allPassword(otp, req.user.id)
         res.json(passwords)
     } catch (err) {
         res.status(500).json(err.message)
